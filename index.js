@@ -56,6 +56,23 @@ async function main() {
         res.status(201).send(novoItem)
     })
 
+    app.put('/livros/:id', async function(req, res) {
+        const id = req.params.id
+
+        const novoItem = req.body
+
+        if(!novoItem || !novoItem.nome){
+            return res.status(400).send('Corpo da requisição deve conter a propriedade `nome`.')
+        }
+
+        await collection.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: novoItem}
+        )
+
+        res.status(201).send(novoItem)
+    })
+
     app.listen(3000)
 }
 
