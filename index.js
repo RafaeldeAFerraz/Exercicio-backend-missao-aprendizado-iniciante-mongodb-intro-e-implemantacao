@@ -26,7 +26,7 @@ async function main() {
 
         res.send(itens)
     })
-    
+
     app.get('/livros/:id', async function (req, res) {
         const id = req.params.id
         const item = await collection.findOne({ _id: new ObjectId(id) })
@@ -36,6 +36,24 @@ async function main() {
         }
 
         res.send(item)
+    })
+
+    app.use(express.json())
+
+    app.post('/livros', async function(req, res) {
+        const novoItem = req.body
+        
+        if(!novoItem || !novoItem.nome){
+            return res.status(400).send('Corpo da requisição deve conter a propriedade `nome`.')
+        }
+        
+        if(collection.indexExists(novoItem)) {
+            return res.status(409).send('Esse item já existe na collection.')
+        }
+
+        await collection.insertOne(novoItem)
+
+        res.status(201).send(novoItem)
     })
 
     app.listen(3000)
